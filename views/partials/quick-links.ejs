@@ -1,0 +1,12 @@
+<nav class="quick-links" aria-label="Quick navigation">
+  <% if (mode === 'app') { %>
+    <a href="/income" class="quick-link <%= activeLink === 'income' ? 'active' : '' %>">Income</a>
+    <a href="/expense" class="quick-link <%= activeLink === 'expense' ? 'active' : '' %>">Expense</a>
+    <a href="/settings" class="quick-link <%= activeLink === 'settings' ? 'active' : '' %>">Settings</a>
+    <a href="/login" class="quick-link <%= activeLink === 'login' ? 'active' : '' %>">Login</a>
+  <% } else { %>
+    <a href="/login" class="quick-link <%= activeLink === 'login' ? 'active' : '' %>">Login</a>
+    <a href="/signup" class="quick-link <%= activeLink === 'signup' ? 'active' : '' %>">Signup</a>
+    <a href="/dashboard" class="quick-link <%= activeLink === 'dashboard' ? 'active' : '' %>">Dashboard</a>
+  <% } %>
+</nav>

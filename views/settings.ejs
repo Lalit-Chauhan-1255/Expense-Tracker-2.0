@@ -1,0 +1,56 @@
+<%- include('partials/header') %>
+
+<section class="content-grid two-up settings-grid">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Profile Settings</h2>
+    </div>
+    <p class="sub-copy">Update your display name used across the dashboard.</p>
+
+    <form action="/settings/profile" method="POST" class="settings-form mt-24">
+      <label>Full Name</label>
+      <input type="text" name="fullName" value="<%= values.fullName %>" required maxlength="80" />
+
+      <label>Email Address</label>
+      <input type="email" name="email" value="<%= values.email %>" readonly />
+
+      <div class="modal-submit-wrap">
+        <button class="action-btn" type="submit">Save Profile</button>
+      </div>
+    </form>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Password Settings</h2>
+    </div>
+    <p class="sub-copy">Use at least 8 characters and keep your password private.</p>
+
+    <form action="/settings/password" method="POST" class="settings-form mt-24" data-password-validate="settings">
+      <label>Current Password</label>
+      <div class="password-wrap">
+        <input id="currentPassword" type="password" name="currentPassword" required minlength="8" />
+        <button type="button" class="password-toggle" data-target="currentPassword"><i class='bx bx-hide'></i></button>
+      </div>
+
+      <label>New Password</label>
+      <div class="password-wrap">
+        <input id="newPassword" type="password" name="newPassword" required minlength="8" />
+        <button type="button" class="password-toggle" data-target="newPassword"><i class='bx bx-hide'></i></button>
+      </div>
+
+      <label>Confirm Password</label>
+      <div class="password-wrap">
+        <input id="confirmPassword" type="password" name="confirmPassword" required minlength="8" />
+        <button type="button" class="password-toggle" data-target="confirmPassword"><i class='bx bx-hide'></i></button>
+      </div>
+      <p class="inline-form-error" data-error-for="confirmPassword"></p>
+
+      <div class="modal-submit-wrap">
+        <button class="action-btn" type="submit">Update Password</button>
+      </div>
+    </form>
+  </article>
+</section>
+
+<%- include('partials/footer') %>

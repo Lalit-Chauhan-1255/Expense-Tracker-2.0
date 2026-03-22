@@ -1,0 +1,256 @@
+<%- include('partials/header') %>
+
+<section class="panel wide-panel">
+  <div class="panel-head">
+    <div>
+      <h2>Expense Overview</h2>
+      <p class="sub-copy">Track your spending trends over time and gain insights into where your money goes.</p>
+    </div>
+    <button class="action-btn" type="button" data-open-modal="expenseModal"><i class='bx bx-plus'></i> Add Expense</button>
+  </div>
+  <canvas
+    id="expenseOverviewLine"
+    height="220"
+    data-labels='<%- JSON.stringify(data.timelineLabels) %>'
+    data-values='<%- JSON.stringify(data.timelineValues) %>'
+  ></canvas>
+</section>
+
+<section class="panel mt-24">
+  <div class="panel-head">
+    <h2>All Expenses</h2>
+    <a class="ghost-btn" href="/expense/download<%= data.downloadQuery ? '?' + data.downloadQuery : '' %>"><i class='bx bx-download'></i> Download</a>
+  </div>
+
+  <form class="filter-bar" method="GET" action="/expense">
+    <input type="text" name="q" value="<%= data.filters.q %>" placeholder="Filter by category" />
+    <select name="category">
+      <option value="">All categories</option>
+      <% categoryOptions.forEach(function(option) { %>
+        <option value="<%= option %>" <%= data.filters.category === option ? 'selected' : '' %>><%= option %></option>
+      <% }) %>
+    </select>
+    <input type="date" name="start" value="<%= data.filters.start %>" />
+    <input type="date" name="end" value="<%= data.filters.end %>" />
+    <button class="ghost-btn" type="submit"><i class='bx bx-filter-alt'></i> Apply</button>
+    <a class="ghost-btn ghost-btn-muted" href="/expense">Reset</a>
+  </form>
+
+  <% if (data.sources.length === 0) { %>
+    <div class="empty-state-card">No expense entries match the current filters.</div>
+  <% } else { %>
+  <div class="dual-list">
+    <% data.sources.forEach(function(item){ %>
+      <div class="list-row compact">
+        <div class="mini-icon emoji"><span><%= item.icon %></span></div>
+        <div class="list-copy">
+          <h4><%= item.title %></h4>
+          <p><span class="category-chip"><%= item.category %></span> <%= item.date %></p>
+        </div>
+        <div class="row-actions">
+          <span class="pill danger">- <%= money(Math.abs(item.amount)) %></span>
+          <button
+            type="button"
+            class="edit-row-btn"
+            aria-label="Edit expense"
+            data-edit-expense
+            data-id="<%= item.id %>"
+            data-title="<%= item.title %>"
+            data-category="<%= item.category %>"
+            data-date="<%= item.rawDate %>"
+            data-amount="<%= Math.abs(item.amount) %>"
+            data-icon="<%= item.icon %>"
+            data-open-modal="expenseEditModal"
+          ><i class='bx bx-pencil'></i></button>
+          <form action="/expense/delete/<%= item.id %>" method="POST" onsubmit="return confirm('Delete this expense entry?')">
+            <button type="submit" class="delete-row-btn" aria-label="Delete expense"><i class='bx bx-trash'></i></button>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+  <% if (data.pagination.totalPages > 1) { %>
+    <nav class="pagination" aria-label="Expense pagination">
+      <a class="pagination-link <%= data.pagination.hasPrev ? '' : 'disabled' %>" href="<%= data.pagination.hasPrev ? data.pagination.prevHref : '#' %>">Previous</a>
+      <% data.pagination.pages.forEach(function(pageItem) { %>
+        <a class="pagination-link <%= pageItem.active ? 'active' : '' %>" href="<%= pageItem.href %>"><%= pageItem.number %></a>
+      <% }) %>
+      <a class="pagination-link <%= data.pagination.hasNext ? '' : 'disabled' %>" href="<%= data.pagination.hasNext ? data.pagination.nextHref : '#' %>">Next</a>
+    </nav>
+  <% } %>
+  <% } %>
+</section>
+
+<div class="modal-overlay" id="expenseModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Add Expense</h3>
+      <button type="button" class="icon-btn" data-close-modal><i class='bx bx-x'></i></button>
+    </div>
+
+    <form action="/expense/add" method="POST" class="modal-form">
+      <div class="picker-row">
+        <button class="icon-preview-btn" type="button" data-icon-toggle="expensePicker">
+          <span data-icon-preview>🧾</span>
+        </button>
+        <div>
+          <p class="picker-label">Pick Icon</p>
+          <button class="picker-link" type="button" data-icon-toggle="expensePicker">Change Icon</button>
+        </div>
+      </div>
+
+      <div class="icon-picker" id="expensePicker" hidden>
+        <input type="text" placeholder="Search" data-icon-search />
+        <div class="emoji-grid" data-icon-panel>
+          <button type="button" data-emoji="🛍️">🛍️</button>
+          <button type="button" data-emoji="✈️">✈️</button>
+          <button type="button" data-emoji="💡">💡</button>
+          <button type="button" data-emoji="🏦">🏦</button>
+          <button type="button" data-emoji="🚌">🚌</button>
+          <button type="button" data-emoji="📚">📚</button>
+          <button type="button" data-emoji="🍽️">🍽️</button>
+          <button type="button" data-emoji="🍿">🍿</button>
+          <button type="button" data-emoji="🍔">🍔</button>
+          <button type="button" data-emoji="🚗">🚗</button>
+          <button type="button" data-emoji="📱">📱</button>
+          <button type="button" data-emoji="🍕">🍕</button>
+        </div>
+      </div>
+
+      <input type="hidden" name="icon" value="🧾" data-icon-target />
+
+      <label>Category</label>
+      <input type="text" name="title" placeholder="Rent, Groceries, etc" required maxlength="80" />
+      <p class="inline-form-error" data-error-for="title"></p>
+
+      <label>Expense Group</label>
+      <select name="category" required>
+        <option value="">Select category</option>
+        <% categoryOptions.forEach(function(option) { %>
+          <option value="<%= option %>"><%= option %></option>
+        <% }) %>
+      </select>
+      <p class="inline-form-error" data-error-for="category"></p>
+
+      <label>Amount</label>
+      <input type="number" name="amount" min="1" step="0.01" required />
+      <p class="inline-form-error" data-error-for="amount"></p>
+
+      <label>Date</label>
+      <input type="date" name="date" required data-date-input />
+      <p class="inline-form-error" data-error-for="date"></p>
+
+      <div class="modal-submit-wrap">
+        <button class="action-btn" type="submit">Add Expense</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="expenseEditModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Edit Expense</h3>
+      <button type="button" class="icon-btn" data-close-modal><i class='bx bx-x'></i></button>
+    </div>
+
+    <form action="/expense/edit/0" method="POST" class="modal-form" data-edit-form="expense">
+      <div class="picker-row">
+        <button class="icon-preview-btn" type="button" data-icon-toggle="expenseEditPicker">
+          <span data-icon-preview>🧾</span>
+        </button>
+        <div>
+          <p class="picker-label">Pick Icon</p>
+          <button class="picker-link" type="button" data-icon-toggle="expenseEditPicker">Change Icon</button>
+        </div>
+      </div>
+
+      <div class="icon-picker" id="expenseEditPicker" hidden>
+        <input type="text" placeholder="Search" data-icon-search />
+        <div class="emoji-grid" data-icon-panel>
+          <button type="button" data-emoji="🛍️">🛍️</button>
+          <button type="button" data-emoji="✈️">✈️</button>
+          <button type="button" data-emoji="💡">💡</button>
+          <button type="button" data-emoji="🏦">🏦</button>
+          <button type="button" data-emoji="🚌">🚌</button>
+          <button type="button" data-emoji="📚">📚</button>
+          <button type="button" data-emoji="🍽️">🍽️</button>
+          <button type="button" data-emoji="🍿">🍿</button>
+          <button type="button" data-emoji="🍔">🍔</button>
+          <button type="button" data-emoji="🚗">🚗</button>
+          <button type="button" data-emoji="📱">📱</button>
+          <button type="button" data-emoji="🍕">🍕</button>
+        </div>
+      </div>
+
+      <input type="hidden" name="icon" value="🧾" data-icon-target />
+
+      <label>Category</label>
+      <input type="text" name="title" placeholder="Rent, Groceries, etc" required maxlength="80" />
+      <p class="inline-form-error" data-error-for="title"></p>
+
+      <label>Expense Group</label>
+      <select name="category" required>
+        <option value="">Select category</option>
+        <% categoryOptions.forEach(function(option) { %>
+          <option value="<%= option %>"><%= option %></option>
+        <% }) %>
+      </select>
+      <p class="inline-form-error" data-error-for="category"></p>
+
+      <label>Amount</label>
+      <input type="number" name="amount" min="1" step="0.01" required />
+      <p class="inline-form-error" data-error-for="amount"></p>
+
+      <label>Date</label>
+      <input type="date" name="date" required data-date-input />
+      <p class="inline-form-error" data-error-for="date"></p>
+
+      <div class="modal-submit-wrap">
+        <button class="action-btn" type="submit">Save Expense</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const expenseCanvas = document.getElementById('expenseOverviewLine');
+const expenseLabels = JSON.parse(expenseCanvas.dataset.labels || '[]');
+const expenseValues = JSON.parse(expenseCanvas.dataset.values || '[]');
+
+const gradient = (() => {
+  const ctx = expenseCanvas.getContext('2d');
+  const g = ctx.createLinearGradient(0, 0, 0, 240);
+  g.addColorStop(0, 'rgba(108,75,255,0.30)');
+  g.addColorStop(1, 'rgba(108,75,255,0)');
+  return g;
+})();
+
+new Chart(expenseCanvas, {
+  type: 'line',
+  data: {
+    labels: expenseLabels,
+    datasets: [{
+      data: expenseValues,
+      borderColor: '#6C4BFF',
+      backgroundColor: gradient,
+      pointBackgroundColor: '#6C4BFF',
+      pointRadius: 3,
+      tension: 0.42,
+      fill: true
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: {
+        beginAtZero: true,
+        grid: { color: '#efeef8' }
+      }
+    }
+  }
+});
+</script>
+
+<%- include('partials/footer') %>

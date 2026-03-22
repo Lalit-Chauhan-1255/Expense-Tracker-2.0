@@ -1,0 +1,207 @@
+{
+  "nextEntryId": 100,
+  "nextUserId": 2,
+  "users": [
+    {
+      "id": 1,
+      "fullName": "Lalit Chauhan",
+      "email": "ank843322@gmail.com",
+      "passwordSalt": "faba11e59a46dbbc0874a469e2cb3f06",
+      "passwordHash": "775f56e14f2474cc56c814bd6962e4d715bf4ff4d1c69f7be623022d762c4034eb7e0a41bc551837ae50d41f750563683832a0cdbcb5139a8cda454012cdb80d",
+      "createdAt": "2026-03-22T16:17:15.680Z"
+    }
+  ],
+  "incomeEntries": [
+    {
+      "id": 1,
+      "userId": 1,
+      "title": "Salary",
+      "category": "Salary",
+      "date": "2025-02-12",
+      "amount": 12000,
+      "icon": "💼"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "title": "Interest from Savings",
+      "category": "Savings",
+      "date": "2025-01-13",
+      "amount": 9600,
+      "icon": "🏦"
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "title": "E-commerce Sales",
+      "category": "Sales",
+      "date": "2025-01-11",
+      "amount": 11900,
+      "icon": "🛒"
+    },
+    {
+      "id": 4,
+      "userId": 1,
+      "title": "Graphic Design",
+      "category": "Design",
+      "date": "2025-01-10",
+      "amount": 10500,
+      "icon": "🎨"
+    },
+    {
+      "id": 5,
+      "userId": 1,
+      "title": "Affiliate Marketing",
+      "category": "Other",
+      "date": "2025-01-09",
+      "amount": 8000,
+      "icon": "📚"
+    },
+    {
+      "id": 6,
+      "userId": 1,
+      "title": "YouTube Revenue",
+      "category": "Other",
+      "date": "2025-01-08",
+      "amount": 1500,
+      "icon": "🎵"
+    },
+    {
+      "id": 7,
+      "userId": 1,
+      "title": "Rental Income",
+      "category": "Rental",
+      "date": "2025-01-07",
+      "amount": 14000,
+      "icon": "🏠"
+    },
+    {
+      "id": 8,
+      "userId": 1,
+      "title": "Stock Market",
+      "category": "Investment",
+      "date": "2025-01-06",
+      "amount": 9200,
+      "icon": "📈"
+    },
+    {
+      "id": 9,
+      "userId": 1,
+      "title": "Freelancing",
+      "category": "Other",
+      "date": "2025-01-04",
+      "amount": 9500,
+      "icon": "🧑‍💻"
+    },
+    {
+      "id": 10,
+      "userId": 1,
+      "title": "Salary",
+      "category": "Salary",
+      "date": "2025-01-01",
+      "amount": 12000,
+      "icon": "💼"
+    }
+  ],
+  "expenseEntries": [
+    {
+      "id": 1,
+      "userId": 1,
+      "title": "Shopping",
+      "category": "Shopping",
+      "date": "2025-02-17",
+      "amount": -430,
+      "icon": "🛍️"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "title": "Travel",
+      "category": "Travel",
+      "date": "2025-02-13",
+      "amount": -670,
+      "icon": "✈️"
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "title": "Electricity Bill",
+      "category": "Utilities",
+      "date": "2025-02-11",
+      "amount": -200,
+      "icon": "💡"
+    },
+    {
+      "id": 4,
+      "userId": 1,
+      "title": "Loan Repayment",
+      "category": "Loans",
+      "date": "2025-02-10",
+      "amount": -600,
+      "icon": "🏦"
+    },
+    {
+      "id": 5,
+      "userId": 1,
+      "title": "Transport",
+      "category": "Transport",
+      "date": "2025-01-14",
+      "amount": -300,
+      "icon": "🚌"
+    },
+    {
+      "id": 6,
+      "userId": 1,
+      "title": "Education",
+      "category": "Education",
+      "date": "2025-01-11",
+      "amount": -800,
+      "icon": "📚"
+    },
+    {
+      "id": 7,
+      "userId": 1,
+      "title": "Dining Out",
+      "category": "Food",
+      "date": "2025-01-09",
+      "amount": -330,
+      "icon": "🍽️"
+    },
+    {
+      "id": 8,
+      "userId": 1,
+      "title": "Entertainment",
+      "category": "Entertainment",
+      "date": "2025-01-08",
+      "amount": -450,
+      "icon": "🍿"
+    },
+    {
+      "id": 9,
+      "userId": 1,
+      "title": "Groceries",
+      "category": "Other",
+      "date": "2025-01-05",
+      "amount": -250,
+      "icon": "🍔"
+    },
+    {
+      "id": 10,
+      "userId": 1,
+      "title": "Fuel",
+      "category": "Fuel",
+      "date": "2025-01-04",
+      "amount": -100,
+      "icon": "🚗"
+    },
+    {
+      "id": 11,
+      "userId": 1,
+      "title": "Internet & Phone",
+      "category": "Internet",
+      "date": "2025-01-03",
+      "amount": -120,
+      "icon": "📱"
+    }
+  ]
+}

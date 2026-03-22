@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Expense Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="auth-page">
+  <div class="auth-shell">
+    <section class="auth-left">
+      <h1 class="brand">Expense Tracker</h1>
+      <%- include('partials/quick-links', { activeLink: 'login', mode: 'auth' }) %>
+
+      <div class="auth-form-wrap">
+        <h2>Welcome Back</h2>
+        <p>Please enter your details to log in</p>
+
+        <% if (error) { %>
+          <div class="auth-error"><%= error %></div>
+        <% } %>
+
+        <% if (message) { %>
+          <div class="auth-success"><%= message %></div>
+        <% } %>
+
+        <form action="/login" method="POST" class="auth-form">
+          <label>Email Address</label>
+          <input type="email" name="email" placeholder="john@example.com" value="<%= values.email %>" required />
+
+          <label>Password</label>
+          <div class="password-wrap">
+            <input id="loginPassword" type="password" name="password" placeholder="Min 8 Characters" required minlength="8" />
+            <button type="button" class="password-toggle" data-target="loginPassword"><i class='bx bx-hide'></i></button>
+          </div>
+
+          <button class="auth-btn" type="submit">LOGIN</button>
+        </form>
+
+        <p class="auth-foot">Don't have an account? <a href="/signup">SignUp</a></p>
+      </div>
+    </section>
+
+    <section class="auth-right">
+      <div class="blob one"></div>
+      <div class="blob two"></div>
+
+      <div class="float-card top">
+        <div class="icon-bubble"><i class='bx bx-trending-up'></i></div>
+        <div>
+          <p>Track Your Income &amp; Expenses</p>
+          <h3>$430,000</h3>
+        </div>
+      </div>
+
+      <div class="float-card chart">
+        <div class="card-head">
+          <div>
+            <h4>All Transactions</h4>
+            <p>2nd Jan to 21th Dec</p>
+          </div>
+          <button>View More</button>
+        </div>
+        <div class="mini-bars">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

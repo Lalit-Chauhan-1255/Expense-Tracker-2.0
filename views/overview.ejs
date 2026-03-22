@@ -1,0 +1,242 @@
+<%- include('partials/header') %>
+
+<section class="dashboard-grid">
+  <div class="stat-card">
+    <div class="stat-icon violet"><i class='bx bx-credit-card'></i></div>
+    <div>
+      <p>Total Balance</p>
+      <h3><%= money(data.cards.balance) %></h3>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon orange"><i class='bx bx-wallet'></i></div>
+    <div>
+      <p>Total Income</p>
+      <h3><%= money(data.cards.income) %></h3>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon red"><i class='bx bx-money-withdraw'></i></div>
+    <div>
+      <p>Total Expenses</p>
+      <h3><%= money(data.cards.expense) %></h3>
+    </div>
+  </div>
+</section>
+
+<section class="content-grid two-up">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Recent Transactions</h2>
+      <a class="ghost-btn" href="/transactions">See All <i class='bx bx-right-arrow-alt'></i></a>
+    </div>
+    <div class="list-wrap">
+      <% data.recentTransactions.forEach(function(item){ %>
+        <div class="list-row">
+          <div class="mini-icon emoji"><span><%= item.icon %></span></div>
+          <div class="list-copy">
+            <h4><%= item.title %></h4>
+            <p><span class="category-chip"><%= item.category %></span><%= item.date %></p>
+          </div>
+          <span class="pill <%= item.amount < 0 ? 'danger' : 'success' %>"><%= item.amount < 0 ? '-' : '+' %> <%= money(Math.abs(item.amount)) %></span>
+        </div>
+      <% }) %>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Financial Overview</h2>
+    </div>
+    <div class="donut-box">
+      <canvas id="balanceDonut" height="240"></canvas>
+      <ul class="legend-inline">
+        <li><span class="dot violet"></span>Total Balance</li>
+        <li><span class="dot red"></span>Total Expenses</li>
+        <li><span class="dot orange"></span>Total Income</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
+<section class="content-grid two-up mt-24">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Expenses</h2>
+      <a class="ghost-btn" href="/expense">See All <i class='bx bx-right-arrow-alt'></i></a>
+    </div>
+    <div class="list-wrap">
+      <% data.expenseList.forEach(function(item){ %>
+        <div class="list-row">
+          <div class="mini-icon emoji"><span><%= item.icon %></span></div>
+          <div class="list-copy">
+            <h4><%= item.title %></h4>
+            <p><span class="category-chip"><%= item.category %></span><%= item.date %></p>
+          </div>
+          <span class="pill danger">- <%= money(Math.abs(item.amount)) %></span>
+        </div>
+      <% }) %>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Monthly Expense Trend</h2>
+    </div>
+    <canvas id="expenseBar" height="240"></canvas>
+  </article>
+</section>
+
+<section class="content-grid two-up mt-24">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Income by Category</h2>
+    </div>
+    <div class="donut-box">
+      <canvas id="incomeCategoryDonut" height="240"></canvas>
+      <ul class="legend-inline split">
+        <% data.incomeCategoryBreakdown.labels.forEach(function(label, idx){ %>
+          <li><span class="dot c<%= idx %>"></span><%= label %></li>
+        <% }) %>
+      </ul>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Income</h2>
+      <a class="ghost-btn" href="/income">See All <i class='bx bx-right-arrow-alt'></i></a>
+    </div>
+    <div class="list-wrap">
+      <% data.incomeList.forEach(function(item){ %>
+        <div class="list-row">
+          <div class="mini-icon emoji"><span><%= item.icon %></span></div>
+          <div class="list-copy">
+            <h4><%= item.title %></h4>
+            <p><span class="category-chip"><%= item.category %></span><%= item.date %></p>
+          </div>
+          <span class="pill success">+ <%= money(item.amount) %></span>
+        </div>
+      <% }) %>
+    </div>
+  </article>
+</section>
+
+<section class="content-grid two-up mt-24">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Expense by Category</h2>
+    </div>
+    <canvas id="expenseCategoryBar" height="240"></canvas>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Monthly Income Trend</h2>
+    </div>
+    <canvas id="incomeTrendLine" height="240"></canvas>
+  </article>
+</section>
+
+<script>
+const donutCommon = {
+  plugins: {
+    legend: { display: false },
+    tooltip: { enabled: true }
+  },
+  cutout: '74%'
+};
+
+new Chart(document.getElementById('balanceDonut'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Total Balance', 'Total Expenses', 'Total Income'],
+    datasets: [{
+      data: [<%= data.cards.balance %>, <%= data.cards.expense %>, <%= data.cards.income %>],
+      backgroundColor: ['#6C4BFF', '#FF345C', '#FF6A00'],
+      borderWidth: 0
+    }]
+  },
+  options: donutCommon
+});
+
+new Chart(document.getElementById('expenseBar'), {
+  type: 'bar',
+  data: {
+    labels: <%- JSON.stringify(data.expenseTrend.labels) %>,
+    datasets: [{
+      data: <%- JSON.stringify(data.expenseTrend.values) %>,
+      backgroundColor: ['#6C4BFF', '#B3A0F2', '#6C4BFF', '#B3A0F2'],
+      borderRadius: 10
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true, grid: { color: '#efeef8' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('incomeCategoryDonut'), {
+  type: 'doughnut',
+  data: {
+    labels: <%- JSON.stringify(data.incomeCategoryBreakdown.labels) %>,
+    datasets: [{
+      data: <%- JSON.stringify(data.incomeCategoryBreakdown.values) %>,
+      backgroundColor: ['#6C4BFF', '#FF2D55', '#FF6A00', '#4A33E0', '#2EC5CE', '#FFA84A'],
+      borderWidth: 0
+    }]
+  },
+  options: donutCommon
+});
+
+new Chart(document.getElementById('expenseCategoryBar'), {
+  type: 'bar',
+  data: {
+    labels: <%- JSON.stringify(data.expenseCategoryBreakdown.labels) %>,
+    datasets: [{
+      data: <%- JSON.stringify(data.expenseCategoryBreakdown.values) %>,
+      backgroundColor: ['#FF345C', '#FF6A00', '#6C4BFF', '#2EC5CE', '#4A33E0', '#FFB449'],
+      borderRadius: 10,
+      borderSkipped: false
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { beginAtZero: true, grid: { color: '#efeef8' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+new Chart(document.getElementById('incomeTrendLine'), {
+  type: 'line',
+  data: {
+    labels: <%- JSON.stringify(data.incomeTrend.labels) %>,
+    datasets: [{
+      data: <%- JSON.stringify(data.incomeTrend.values) %>,
+      borderColor: '#FF6A00',
+      backgroundColor: 'rgba(255,106,0,0.15)',
+      fill: true,
+      tension: 0.35,
+      pointBackgroundColor: '#FF6A00',
+      pointRadius: 4
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true, grid: { color: '#efeef8' } }
+    }
+  }
+});
+</script>
+
+<%- include('partials/footer') %>

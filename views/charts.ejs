@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Analytics Snapshot</h2>
+  </div>
+  <div class="content-grid two-up">
+    <article>
+      <canvas id="analyticsOne" height="240"></canvas>
+    </article>
+    <article>
+      <canvas id="analyticsTwo" height="240"></canvas>
+    </article>
+  </div>
+</section>
+
+<script>
+new Chart(document.getElementById('analyticsOne'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Balance', 'Expense', 'Income'],
+    datasets: [{
+      data: [<%= data.cards.balance %>, <%= data.cards.expense %>, <%= data.cards.income %>],
+      backgroundColor: ['#6C4BFF', '#FF345C', '#FF6A00'],
+      borderWidth: 0
+    }]
+  },
+  options: { plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
+});
+
+new Chart(document.getElementById('analyticsTwo'), {
+  type: 'bar',
+  data: {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [{
+      label: 'Expenses',
+      data: [210, 430, 360, 520, 310, 470],
+      backgroundColor: ['#B3A0F2', '#6C4BFF', '#B3A0F2', '#6C4BFF', '#B3A0F2', '#6C4BFF'],
+      borderRadius: 10
+    }]
+  },
+  options: { plugins: { legend: { display: false } } }
+});
+</script>
+
+<%- include('partials/footer') %>

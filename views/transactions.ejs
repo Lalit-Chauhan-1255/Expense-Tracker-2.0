@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>All Expense Transactions</h2>
+    <button class="ghost-btn">Filter <i class='bx bx-filter-alt'></i></button>
+  </div>
+  <div class="dual-list">
+    <% data.sources.forEach(function(item){ %>
+      <div class="list-row compact">
+        <div class="mini-icon"><i class='bx bx-<%= item.icon %>'></i></div>
+        <div class="list-copy">
+          <h4><%= item.title %></h4>
+          <p><%= item.date %></p>
+        </div>
+        <span class="pill danger">- <%= money(Math.abs(item.amount)) %></span>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

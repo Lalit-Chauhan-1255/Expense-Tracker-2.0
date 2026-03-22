@@ -1,0 +1,248 @@
+<%- include('partials/header') %>
+
+<section class="panel wide-panel">
+  <div class="panel-head">
+    <div>
+      <h2>Income Overview</h2>
+      <p class="sub-copy">Track your earnings over time and analyze your income trends.</p>
+    </div>
+    <button class="action-btn" type="button" data-open-modal="incomeModal"><i class='bx bx-plus'></i> Add Income</button>
+  </div>
+  <canvas
+    id="incomeOverviewBar"
+    height="220"
+    data-labels='<%- JSON.stringify(data.timelineLabels) %>'
+    data-values='<%- JSON.stringify(data.timelineValues) %>'
+  ></canvas>
+</section>
+
+<section class="panel mt-24">
+  <div class="panel-head">
+    <h2>Income Sources</h2>
+    <a class="ghost-btn" href="/income/download<%= data.downloadQuery ? '?' + data.downloadQuery : '' %>"><i class='bx bx-download'></i> Download</a>
+  </div>
+
+  <form class="filter-bar" method="GET" action="/income">
+    <input type="text" name="q" value="<%= data.filters.q %>" placeholder="Filter by source" />
+    <select name="category">
+      <option value="">All categories</option>
+      <% categoryOptions.forEach(function(option) { %>
+        <option value="<%= option %>" <%= data.filters.category === option ? 'selected' : '' %>><%= option %></option>
+      <% }) %>
+    </select>
+    <input type="date" name="start" value="<%= data.filters.start %>" />
+    <input type="date" name="end" value="<%= data.filters.end %>" />
+    <button class="ghost-btn" type="submit"><i class='bx bx-filter-alt'></i> Apply</button>
+    <a class="ghost-btn ghost-btn-muted" href="/income">Reset</a>
+  </form>
+
+  <% if (data.sources.length === 0) { %>
+    <div class="empty-state-card">No income entries match the current filters.</div>
+  <% } else { %>
+  <div class="dual-list">
+    <% data.sources.forEach(function(item){ %>
+      <div class="list-row compact">
+        <div class="mini-icon emoji"><span><%= item.icon %></span></div>
+        <div class="list-copy">
+          <h4><%= item.title %></h4>
+          <p><span class="category-chip"><%= item.category %></span> <%= item.date %></p>
+        </div>
+        <div class="row-actions">
+          <span class="pill success">+ <%= money(item.amount) %></span>
+          <button
+            type="button"
+            class="edit-row-btn"
+            aria-label="Edit income"
+            data-edit-income
+            data-id="<%= item.id %>"
+            data-title="<%= item.title %>"
+            data-category="<%= item.category %>"
+            data-date="<%= item.rawDate %>"
+            data-amount="<%= item.amount %>"
+            data-icon="<%= item.icon %>"
+            data-open-modal="incomeEditModal"
+          ><i class='bx bx-pencil'></i></button>
+          <form action="/income/delete/<%= item.id %>" method="POST" onsubmit="return confirm('Delete this income entry?')">
+            <button type="submit" class="delete-row-btn" aria-label="Delete income"><i class='bx bx-trash'></i></button>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+  <% if (data.pagination.totalPages > 1) { %>
+    <nav class="pagination" aria-label="Income pagination">
+      <a class="pagination-link <%= data.pagination.hasPrev ? '' : 'disabled' %>" href="<%= data.pagination.hasPrev ? data.pagination.prevHref : '#' %>">Previous</a>
+      <% data.pagination.pages.forEach(function(pageItem) { %>
+        <a class="pagination-link <%= pageItem.active ? 'active' : '' %>" href="<%= pageItem.href %>"><%= pageItem.number %></a>
+      <% }) %>
+      <a class="pagination-link <%= data.pagination.hasNext ? '' : 'disabled' %>" href="<%= data.pagination.hasNext ? data.pagination.nextHref : '#' %>">Next</a>
+    </nav>
+  <% } %>
+  <% } %>
+</section>
+
+<div class="modal-overlay" id="incomeModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Add Income</h3>
+      <button type="button" class="icon-btn" data-close-modal><i class='bx bx-x'></i></button>
+    </div>
+
+    <form action="/income/add" method="POST" class="modal-form">
+      <div class="picker-row">
+        <button class="icon-preview-btn" type="button" data-icon-toggle="incomePicker">
+          <span data-icon-preview>💼</span>
+        </button>
+        <div>
+          <p class="picker-label">Pick Icon</p>
+          <button class="picker-link" type="button" data-icon-toggle="incomePicker">Change Icon</button>
+        </div>
+      </div>
+
+      <div class="icon-picker" id="incomePicker" hidden>
+        <input type="text" placeholder="Search" data-icon-search />
+        <div class="emoji-grid" data-icon-panel>
+          <button type="button" data-emoji="💼">💼</button>
+          <button type="button" data-emoji="🏦">🏦</button>
+          <button type="button" data-emoji="🛒">🛒</button>
+          <button type="button" data-emoji="🎨">🎨</button>
+          <button type="button" data-emoji="📚">📚</button>
+          <button type="button" data-emoji="🎵">🎵</button>
+          <button type="button" data-emoji="🏠">🏠</button>
+          <button type="button" data-emoji="📈">📈</button>
+          <button type="button" data-emoji="🧑‍💻">🧑‍💻</button>
+          <button type="button" data-emoji="💡">💡</button>
+          <button type="button" data-emoji="💰">💰</button>
+          <button type="button" data-emoji="🪙">🪙</button>
+        </div>
+      </div>
+
+      <input type="hidden" name="icon" value="💼" data-icon-target />
+
+      <label>Income Source</label>
+      <input type="text" name="title" placeholder="Freelance, Salary, etc" required maxlength="80" />
+      <p class="inline-form-error" data-error-for="title"></p>
+
+      <label>Category</label>
+      <select name="category" required>
+        <option value="">Select category</option>
+        <% categoryOptions.forEach(function(option) { %>
+          <option value="<%= option %>"><%= option %></option>
+        <% }) %>
+      </select>
+      <p class="inline-form-error" data-error-for="category"></p>
+
+      <label>Amount</label>
+      <input type="number" name="amount" min="1" step="0.01" required />
+      <p class="inline-form-error" data-error-for="amount"></p>
+
+      <label>Date</label>
+      <input type="date" name="date" required data-date-input />
+      <p class="inline-form-error" data-error-for="date"></p>
+
+      <div class="modal-submit-wrap">
+        <button class="action-btn" type="submit">Add Income</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="incomeEditModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Edit Income</h3>
+      <button type="button" class="icon-btn" data-close-modal><i class='bx bx-x'></i></button>
+    </div>
+
+    <form action="/income/edit/0" method="POST" class="modal-form" data-edit-form="income">
+      <div class="picker-row">
+        <button class="icon-preview-btn" type="button" data-icon-toggle="incomeEditPicker">
+          <span data-icon-preview>💼</span>
+        </button>
+        <div>
+          <p class="picker-label">Pick Icon</p>
+          <button class="picker-link" type="button" data-icon-toggle="incomeEditPicker">Change Icon</button>
+        </div>
+      </div>
+
+      <div class="icon-picker" id="incomeEditPicker" hidden>
+        <input type="text" placeholder="Search" data-icon-search />
+        <div class="emoji-grid" data-icon-panel>
+          <button type="button" data-emoji="💼">💼</button>
+          <button type="button" data-emoji="🏦">🏦</button>
+          <button type="button" data-emoji="🛒">🛒</button>
+          <button type="button" data-emoji="🎨">🎨</button>
+          <button type="button" data-emoji="📚">📚</button>
+          <button type="button" data-emoji="🎵">🎵</button>
+          <button type="button" data-emoji="🏠">🏠</button>
+          <button type="button" data-emoji="📈">📈</button>
+          <button type="button" data-emoji="🧑‍💻">🧑‍💻</button>
+          <button type="button" data-emoji="💡">💡</button>
+          <button type="button" data-emoji="💰">💰</button>
+          <button type="button" data-emoji="🪙">🪙</button>
+        </div>
+      </div>
+
+      <input type="hidden" name="icon" value="💼" data-icon-target />
+
+      <label>Income Source</label>
+      <input type="text" name="title" placeholder="Freelance, Salary, etc" required maxlength="80" />
+      <p class="inline-form-error" data-error-for="title"></p>
+
+      <label>Category</label>
+      <select name="category" required>
+        <option value="">Select category</option>
+        <% categoryOptions.forEach(function(option) { %>
+          <option value="<%= option %>"><%= option %></option>
+        <% }) %>
+      </select>
+      <p class="inline-form-error" data-error-for="category"></p>
+
+      <label>Amount</label>
+      <input type="number" name="amount" min="1" step="0.01" required />
+      <p class="inline-form-error" data-error-for="amount"></p>
+
+      <label>Date</label>
+      <input type="date" name="date" required data-date-input />
+      <p class="inline-form-error" data-error-for="date"></p>
+
+      <div class="modal-submit-wrap">
+        <button class="action-btn" type="submit">Save Income</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const incomeCanvas = document.getElementById('incomeOverviewBar');
+const incomeLabels = JSON.parse(incomeCanvas.dataset.labels || '[]');
+const incomeValues = JSON.parse(incomeCanvas.dataset.values || '[]');
+
+new Chart(incomeCanvas, {
+  type: 'bar',
+  data: {
+    labels: incomeLabels,
+    datasets: [{
+      data: incomeValues,
+      backgroundColor: (ctx) => {
+        const index = ctx.dataIndex;
+        return index % 2 === 0 ? '#6C4BFF' : '#B3A0F2';
+      },
+      borderRadius: 10,
+      borderSkipped: false
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: {
+        beginAtZero: true,
+        grid: { color: '#efeef8' }
+      }
+    }
+  }
+});
+</script>
+
+<%- include('partials/footer') %>
